@@ -203,3 +203,15 @@ void k(same_as<double> auto) override;   //  2
 void k(same_as<float> auto) override;    //  3
 k(0); // calls 1
 ```
+
+#### conversions 6
+
+```cpp
+virtual void f(auto&& x) = 0;
+void f(string&) override; // 1
+void f(string) override; // 2
+
+string x;
+f(x); // 1
+f(std::move(x)); // 2
+```
