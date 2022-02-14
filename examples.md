@@ -82,6 +82,67 @@ inline constexpr struct All {
 all(args...);
 ```
 
+## Meanings of different ways of passing parameters
+
+### The customization point function will not modify my argument (unless I pass it by move)
+
+This is naturally expressed as pass-by-value; it may take ownership of rvalues,
+but will never modify mutable lvalues.
+
+```cpp
+void no_lvalue_without_copy(auto x) = 0;
+
+struct A {} a;
+struct B {} b;
+struct C {} c;
+
+// can either override this with the same kind of signature...
+void no_lvalue_without_copy(A x) override; // 1
+no_lvalue_without_copy(a); // OK, copy-constructs x
+no_lvalue_without_copy(A{}); // OK, move-constructs x
+
+
+// or override with two or even three signatures
+void no_lvalue_without_copy(B y) override;        // 2
+void no_lvalue_without_copy(B&& y) override;      // 3
+void no_lvalue_without_copy(B const& y) override; // 4
+
+no_lvalue_without_copy(b);            // 2
+no_lvalue_without_copy(std::move(b)); // 3
+no_lvalue_without_copy(as_const(b));  // 4
+```
+
+### I want to forward the value category
+
+This is naturally expressed with a forwarding reference:
+
+```cpp
+void forward_reference(auto&& x) = 0;
+
+// one can do this with three overrides...
+void forward_reference(A&) override;
+void forward_reference(A&&) override;
+void forward_reference(A const&) override;
+
+// or just one (similar = same-up-to-cvref)
+void forward_reference(similar<B> auto&&) override;
+
+// or also just one
+void forward_reference(C x) override; // does the right thing!
+```
+
+### I want to only accept lvalues
+
+Quite naturally expressed via taking an lvalue.
+
+```cpp
+void lvalue_only(auto& x) = 0;
+
+void lvalue_only(A&) override;
+void lvalue_only(A&&) override; // can never be called
+```
+
+
 ## Examples
 
 ### Generic forwarding
@@ -215,3 +276,4 @@ string x;
 f(x); // 1
 f(std::move(x)); // 2
 ```
+
