@@ -90,7 +90,7 @@ This is naturally expressed as pass-by-value; it may take ownership of rvalues,
 but will never modify mutable lvalues.
 
 ```cpp
-void no_lvalue_without_copy(auto x) = 0;
+virtual void no_lvalue_without_copy(auto x) = 0;
 
 struct A {} a;
 struct B {} b;
@@ -107,8 +107,8 @@ void no_lvalue_without_copy(B y) override;        // 2
 void no_lvalue_without_copy(B&& y) override;      // 3
 void no_lvalue_without_copy(B const& y) override; // 4
 
-no_lvalue_without_copy(b);            // 2
-no_lvalue_without_copy(std::move(b)); // 3
+no_lvalue_without_copy(b);            // ERROR (ambiguous)
+no_lvalue_without_copy(std::move(b)); // ERROR (ambiguous)
 no_lvalue_without_copy(as_const(b));  // 4
 ```
 
@@ -117,7 +117,7 @@ no_lvalue_without_copy(as_const(b));  // 4
 This is naturally expressed with a forwarding reference:
 
 ```cpp
-void forward_reference(auto&& x) = 0;
+virtual void forward_reference(auto&& x) = 0;
 
 // one can do this with three overrides...
 void forward_reference(A&) override;
@@ -136,7 +136,7 @@ void forward_reference(C x) override; // does the right thing!
 Quite naturally expressed via taking an lvalue.
 
 ```cpp
-void lvalue_only(auto& x) = 0;
+virtual void lvalue_only(auto& x) = 0;
 
 void lvalue_only(A&) override;
 void lvalue_only(A&&) override; // can never be called
