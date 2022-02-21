@@ -10,3 +10,12 @@ py_binary(
     main = "popcorn.py",
     visibility = ["//visibility:public"],
 )
+
+sh_test(
+    name = "check_readme",
+    srcs = ["check_readme.sh"],
+    data = [
+        "README.md",
+        ":pop",
+    ],
+)
