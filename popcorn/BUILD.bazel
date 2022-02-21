@@ -1,0 +1,12 @@
+py_library(
+    name = "popcorn",
+    srcs = ["popcorn.py"],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "pop",
+    srcs = ["popcorn.py"],
+    main = "popcorn.py",
+    visibility = ["//visibility:public"],
+)

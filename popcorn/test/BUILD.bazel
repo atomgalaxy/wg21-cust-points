@@ -1,0 +1,39 @@
+py_test(
+    name = "unit",
+    srcs = ["unit.py"],
+    main = "unit.py",
+    deps = ["//popcorn"],
+)
+
+sh_test(
+    name = "extract_targets",
+    srcs = ["extract_targets.sh"],
+    data = [
+        ":in.cpp",
+        "//popcorn:pop",
+    ],
+)
+
+sh_test(
+    name = "expand",
+    srcs = ["expand.sh"],
+    data = [
+        "expected/first.first.1.OK.cpp",
+        "expected/first.first.2.Error.cpp",
+        "expected/first.first.3.Error.cpp",
+        "expected/first.second.4.Error.cpp",
+        "expected/first.second.5.OK.cpp",
+        "expected/first.second.6.Error.cpp",
+        ":in.cpp",
+        "//popcorn:pop",
+    ],
+)
+
+sh_test(
+    name = "dry_run",
+    srcs = ["dry_run.sh"],
+    data = [
+        ":in.cpp",
+        "//popcorn:pop",
+    ],
+)
